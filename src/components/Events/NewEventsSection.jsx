@@ -1,52 +1,41 @@
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 
 import LoadingIndicator from '../UI/LoadingIndicator.jsx';
 import ErrorBlock from '../UI/ErrorBlock.jsx';
 import EventItem from './EventItem.jsx';
+import fetchEvents from '../../utils/callhandling.js';
+import { useQuery } from '@tanstack/react-query';
 
 export default function NewEventsSection() {
-  const [data, setData] = useState();
-  const [error, setError] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [data, setData] = useState();
+  // const [error, setError] = useState();
+  // const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    async function fetchEvents() {
-      setIsLoading(true);
-      const response = await fetch('http://localhost:3000/events');
+  /* 
+      Some benefits of using tanstack/react-query over useEffect and useState for data fetching:
+      1. Caching: React Query automatically caches the data fetched from the server, which can improve performance and reduce the number of network requests made.
+      2. Automatic refetching: React Query can automatically refetch data when it becomes stale or when certain conditions are met, such as when the user navigates back to a page.
+      3. Background updates: React Query can update the cached data in the background, so that the user always sees the most up-to-date information without having to manually refresh the page.
+      4. Error handling: React Query provides built-in error handling and retry mechanisms, which can simplify error handling in your application.
+      5. Devtools: React Query provides a set of devtools that allow you to inspect and debug your queries and mutations in real-time.
+      6: Switching between windows: Reqct query fetches the data again from the server if user naviagtes away from the screen and comes back, if the time to come back is more than the staleTime */
 
-      if (!response.ok) {
-        const error = new Error('An error occurred while fetching the events');
-        error.code = response.status;
-        error.info = await response.json();
-        throw error;
-      }
-
-      const { events } = await response.json();
-
-      return events;
-    }
-
-    fetchEvents()
-      .then((events) => {
-        setData(events);
-      })
-      .catch((error) => {
-        setError(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
-
+  const {data, isError, isPending, error} = useQuery({
+    queryKey: ['events'],
+    queryFn: fetchEvents,
+    gcTime: 1500, /* time for which the data is kept in the cache, default 5mins, 30000 milisecs */
+    staleTime: 100, /* Time for which no new data is fetched from the server and the cached data is considerd relevant/fresh, default: 0 */
+  }) 
+ 
   let content;
 
-  if (isLoading) {
+  if (isPending) {
     content = <LoadingIndicator />;
   }
 
-  if (error) {
+  if (isError) {
     content = (
-      <ErrorBlock title="An error occurred" message="Failed to fetch events" />
+      <ErrorBlock title="An error occurred" message={error.message}/>
     );
   }
 
