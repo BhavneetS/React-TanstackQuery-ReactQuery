@@ -1,6 +1,8 @@
- export default async function fetchEvents() {
+ export default async function fetchEvents({searchTerms}) {
     //   setIsLoading(true);
-    const response = await fetch('http://localhost:3000/events');
+    let url = "http://localhost:3000/events"
+    searchTerms && (url+="?search="+ searchTerms);
+    const response = await fetch(url);
 
     if (!response.ok) {
     const error = new Error('An error occurred while fetching the events');
