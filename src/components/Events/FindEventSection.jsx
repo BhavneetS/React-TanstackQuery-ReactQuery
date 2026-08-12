@@ -21,7 +21,7 @@ export default function FindEventSection() {
     /* 
       Do not call the queryFunction. Only pass a reference
     */
-    queryFn: () => fetchEvents({searchTerms: searchValue}),
+    queryFn: ({signal}) => fetchEvents({signal, searchTerms: searchValue}),
     queryKey: ['events', {searchKey: searchValue}],
   })
 

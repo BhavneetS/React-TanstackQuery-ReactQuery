@@ -22,6 +22,8 @@ export default function NewEventsSection() {
 
   const {data, isError, isPending, error} = useQuery({
     queryKey: ['events'],
+    // React query passes a default parameter to the query function, which is an object containing the query key and other metadata. The metadata includes a Signal object that can be used to cancel the query if it is no longer needed. This is useful for preventing memory leaks and improving performance, especially in cases where the user navigates away from a page before the query has completed.
+    // The query function can use this signal to cancel the request if it is no longer needed. This is done by passing the signal to the fetch function as an option. If the signal is aborted, the fetch function will throw an error, which can be caught and handled appropriately.
     queryFn: fetchEvents,
     gcTime: 1500, /* time for which the data is kept in the cache, default 5mins, 5*60*1000 millisecs */
     staleTime: 100, /* Time for which no new data is fetched from the server and the cached data is considerd relevant/fresh, default: 0 */
