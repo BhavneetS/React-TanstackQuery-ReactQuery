@@ -12,7 +12,7 @@ export default function EventDetails() {
   const navigate = useNavigate();
   
   const {data, isPending, isError, error} = useQuery({
-    queryKey: ['events-', id],
+    queryKey: ['events', id],
     queryFn: ({signal}) => fetchEvent({signal, id}),
     staleTime:1000
   })
@@ -20,7 +20,14 @@ export default function EventDetails() {
   const {mutate} = useMutation({
     mutationFn: deleteEvent,
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey:['events']})
+      // since we are invalidating all the queries for 'event', react will refetch all the queries again before navigating back to the events page. 
+      // This is not ideal as we are refetching the data for the event that we just deleted. Hence, we can use the exact flag to invalidate only the queries that match the exact query key. This is useful when we want to invalidate a specific query and not all queries that match the query key.
+      queryClient.invalidateQueries({
+        queryKey:['events'],
+        // the RefetchType 'none' is used to prevent the query from refetching the data after invalidating the query. 
+        // This is useful when we want to invalidate the query but do not want to refetch the data immediately. We can use this when we know that the data has changed and we do not want to refetch the data immediately.
+        refetchType: 'none'
+      })
       navigate(`../events`);
     }
   })
