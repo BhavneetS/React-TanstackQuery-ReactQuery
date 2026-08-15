@@ -3,7 +3,7 @@
 import LoadingIndicator from '../UI/LoadingIndicator.jsx';
 import ErrorBlock from '../UI/ErrorBlock.jsx';
 import EventItem from './EventItem.jsx';
-import fetchEvents from '../../utils/callhandling.js';
+import {fetchEvents} from '../../utils/callhandling.js';
 import { useQuery } from '@tanstack/react-query';
 
 export default function NewEventsSection() {

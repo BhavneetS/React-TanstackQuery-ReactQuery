@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
-import fetchEvents from '../../utils/callhandling';
+import {fetchEvents} from '../../utils/callhandling';
 import ErrorBlock from '../UI/ErrorBlock';
 import LoadingIndicator from '../UI/LoadingIndicator';
 import EventItem from './EventItem';
 
 export default function FindEventSection() {
 
-  const [searchValue, setSearchvalue] = useState('');
+  const [searchValue, setSearchvalue] = useState();
   const searchElement = useRef();
 
   function handleSubmit(event) {
@@ -16,18 +16,22 @@ export default function FindEventSection() {
   }
 
 
-  const {data, isPending, isError, error}= useQuery({
+  const {data, /* isPending */ isLoading, isError, error}= useQuery({
 
     /* 
       Do not call the queryFunction. Only pass a reference
     */
     queryFn: ({signal}) => fetchEvents({signal, searchTerms: searchValue}),
     queryKey: ['events', {searchKey: searchValue}],
+    // we can disabled the query from firing by using the enabled property. This is useful when we want to wait for some condition to be met before firing the query.
+    // if the enabled flag is set to false, the isPending flag will be set to true hence showing a loading state.
+    // for this, tanstack provides another property called isLoading, which is true only when the query is in the loading state and not in the disabled state.
+    enabled: searchValue !== undefined
   })
 
   let content = <p>Please enter a term to find events.</p>
 
-  if(isPending) {
+  if(isLoading) {
     <LoadingIndicator/>
   }
 
