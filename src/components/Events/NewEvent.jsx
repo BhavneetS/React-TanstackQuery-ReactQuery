@@ -14,7 +14,11 @@ export default function NewEvent() {
 
   // useMutation hook retruns a function 'mutate' that we can call to trigger the mutation. It also returns an object with properties like isLoading, isError, error, data, etc. that we can use to handle the state of the mutation.
   const {mutate, isPending, isError, error} = useMutation({
-    mutationFn: createNewEvent
+    mutationFn: createNewEvent,
+    onSuccess: () => {
+      // navigate to the newly created event's page
+      navigate(`../events`);
+    }
   })
 
   function handleSubmit(formData) {
